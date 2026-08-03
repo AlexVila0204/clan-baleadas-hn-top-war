@@ -1,0 +1,14 @@
+{
+  "name": "baleadas-war-stats",
+  "version": "1.0.0",
+  "description": "Clash Royale Clan War Stats - Baleadas",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^4.21.0"
+  }
+}

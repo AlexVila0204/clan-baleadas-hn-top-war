@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baleadas Guerra de Clanes - Estadísticas</title>
+  <meta name="description" content="Estadísticas de Guerra de Clanes del clan Baleadas en Clash Royale. Ranking mensual de puntos por jugador.">
+  
+  <!-- Google Fonts: Unbounded, Plus Jakarta Sans, Space Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Mono:wght@400;700&family=Unbounded:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Icon & Animation Libraries -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background glow and grid -->
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="hero-header">
+      <div class="clan-badge-wrapper">
+        <div class="clan-badge-glow"></div>
+        <div class="clan-badge">
+          <i data-lucide="swords" class="clan-badge-icon"></i>
+        </div>
+      </div>
+      <h1 class="clan-title">
+        <span class="title-pre">Clan</span>
+        <span class="title-main" id="clanName">Baleadas</span>
+      </h1>
+      <p class="hero-subtitle">Estadísticas de Guerra de Clanes</p>
+      <div class="clan-meta" id="clanMeta">
+        <span class="meta-item" id="clanMembers">
+          <i data-lucide="users" class="meta-icon"></i>
+          <span class="meta-value">--</span>
+        </span>
+        <span class="meta-divider">•</span>
+        <span class="meta-item" id="clanTrophies">
+          <i data-lucide="trophy" class="meta-icon"></i>
+          <span class="meta-value">--</span>
+        </span>
+        <span class="meta-divider">•</span>
+        <span class="meta-item" id="clanWarTrophies">
+          <i data-lucide="swords" class="meta-icon"></i>
+          <span class="meta-value">--</span>
+        </span>
+      </div>
+    </header>
+
+    <!-- Month Selector -->
+    <section class="controls-section">
+      <div class="month-selector">
+        <label class="selector-label">Seleccionar Mes</label>
+        <div class="month-buttons" id="monthButtons">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Loading State -->
+    <div class="loading-state" id="loadingState">
+      <div class="loader">
+        <div class="loader-ring"></div>
+        <div class="loader-ring"></div>
+        <div class="loader-ring"></div>
+      </div>
+      <p class="loading-text">Cargando datos de guerra...</p>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-state hidden" id="errorState">
+      <i data-lucide="alert-circle" class="error-icon"></i>
+      <p class="error-text" id="errorText">Error al cargar datos</p>
+      <button class="btn-retry" onclick="loadData()">Reintentar</button>
+    </div>
+
+    <!-- Stats Summary -->
+    <section class="stats-summary hidden" id="statsSummary">
+      <div class="stat-card">
+        <div class="stat-icon-wrapper">
+          <i data-lucide="swords" class="stat-icon"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value" id="totalWars">0</span>
+          <span class="stat-label">Guerras</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrapper">
+          <i data-lucide="zap" class="stat-icon"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value" id="totalFame">0</span>
+          <span class="stat-label">Puntos Totales</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrapper">
+          <i data-lucide="crown" class="stat-icon"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value" id="topScorerName">--</span>
+          <span class="stat-label">Mejor Jugador</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrapper">
+          <i data-lucide="trending-up" class="stat-icon"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value" id="avgFame">0</span>
+          <span class="stat-label">Promedio por Jugador</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Podium -->
+    <section class="podium-section hidden" id="podiumSection">
+      <h2 class="section-title">
+        <i data-lucide="trophy" class="title-icon icon-gold"></i>
+        Top 3 del Mes
+      </h2>
+      <div class="podium">
+        <div class="podium-place second" id="podium2">
+          <div class="podium-badge-wrapper">
+            <span class="podium-badge silver">2</span>
+          </div>
+          <div class="podium-name">--</div>
+          <div class="podium-score">0</div>
+          <div class="podium-bar">
+            <div class="podium-bar-fill"></div>
+          </div>
+          <div class="podium-rank">2º Lugar</div>
+        </div>
+        <div class="podium-place first" id="podium1">
+          <div class="podium-crown-wrapper">
+            <i data-lucide="crown" class="podium-crown-icon"></i>
+          </div>
+          <div class="podium-badge-wrapper">
+            <span class="podium-badge gold">1</span>
+          </div>
+          <div class="podium-name">--</div>
+          <div class="podium-score">0</div>
+          <div class="podium-bar">
+            <div class="podium-bar-fill"></div>
+          </div>
+          <div class="podium-rank">1er Lugar</div>
+        </div>
+        <div class="podium-place third" id="podium3">
+          <div class="podium-badge-wrapper">
+            <span class="podium-badge bronze">3</span>
+          </div>
+          <div class="podium-name">--</div>
+          <div class="podium-score">0</div>
+          <div class="podium-bar">
+            <div class="podium-bar-fill"></div>
+          </div>
+          <div class="podium-rank">3er Lugar</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ranking Table -->
+    <section class="ranking-section hidden" id="rankingSection">
+      <h2 class="section-title">
+        <i data-lucide="bar-chart-2" class="title-icon"></i>
+        Ranking Completo
+      </h2>
+      <div class="table-wrapper">
+        <table class="ranking-table" id="rankingTable">
+          <thead>
+            <tr>
+              <th class="th-rank">#</th>
+              <th class="th-player">Jugador</th>
+              <th class="th-fame">Puntos</th>
+              <th class="th-decks">Mazos</th>
+              <th class="th-wars">Guerras</th>
+              <th class="th-avg">Prom/Guerra</th>
+            </tr>
+          </thead>
+          <tbody id="rankingBody">
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- War Detail -->
+    <section class="wars-detail-section hidden" id="warsDetailSection">
+      <h2 class="section-title">
+        <i data-lucide="swords" class="title-icon"></i>
+        Detalle por Guerra
+      </h2>
+      <div class="wars-accordion" id="warsAccordion">
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Datos obtenidos de la API oficial de Clash Royale</p>
+      <p class="footer-sub">Clan Baleadas #LCY8L80V</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

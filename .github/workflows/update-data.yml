@@ -1,0 +1,40 @@
+name: Update War Data & Deploy to GitHub Pages
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Manual trigger from GitHub UI
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch Latest Clash Royale Data
+        env:
+          SC_EMAIL: ${{ secrets.SC_EMAIL }}
+          SC_PASSWORD: ${{ secrets.SC_PASSWORD }}
+        run: node build-static-data.js
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
